@@ -4,12 +4,15 @@
 awk fail to extract columns from more than one file. 
 This little script provide a simple solution to extract 
 a column from each file. Field separator is space or any other 
-non alphanumeric character. It uses the lua %w or %g format.
+non alphanumeric character. It uses the lua %w format, but 
+a bit more complex: "[%d%a%.]+" line 76.
 
-splitt file1 column1 .. fileN columnN
+splitt file1 column1 .. fileN columnX
 
 Written when stranded overnight at Arlanda Airport from Umeå to Oslo
 by Ole W. Saastad, 20 May 2016.
+
+Last update 1. Nov 2024.
 
 ]]
 
@@ -20,7 +23,7 @@ if #arg==0 then
 end
 if not (#arg%2==0) then
     print("Number of arguments must even")
-    print("usage: splitt file1 column1 .. fileN columnN")
+    print("usage: splitt file1 columnX  file2 columnY file3 columnZ ....")
     os.exit(1)
 end
 files=#arg/2
@@ -71,20 +74,20 @@ while not eof do -- While still more lines to read from the files.
       pos = 0
 
       while not eol do -- parse the line in the i'th file.
-	 local s, e = string.find(line[i], "%g+", pos) -- %w alphanumeric chars 
-	 if s then -- found a word?         %g all printable except space.
-	    pos = e + 1    -- next position is after this word
-	    word = word + 1 
-	    if word == c[i] then
-	       col[i]=string.sub(line[i], s, e) -- extract the word.
-	       eol= true -- no need to read any more after we found the col.
-	    end
-	 else -- if s, false no more words.
-	    print()
-	    print("Column ",c[i]," not found in file",arg[i*2-1])
-	    print("Giving up")
-	    os.exit(1)
-	 end -- if s
+         local s, e = string.find(line[i], "[%d%a%.]+", pos) -- %w alphanumeric chars
+         if s then -- found a word?
+            pos = e + 1    -- next position is after this word
+            word = word + 1 
+            if word == c[i] then
+               col[i]=string.sub(line[i], s, e) -- extract the word.
+               eol= true -- no need to read any more after we found the col.
+            end
+         else -- if s, false no more words.
+            print()
+            print("Column ",c[i]," not found in file",arg[i*2-1])
+            print("Giving up")
+            os.exit(1)
+         end -- if s
       end -- while not eol
       io.write(string.format("%s ",col[i])) -- print out the column value.      
    end -- for i = 1, files, 1
