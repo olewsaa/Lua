@@ -7,18 +7,18 @@ a column from each file. Field separator is space or any other
 non alphanumeric character. It uses the lua %w format, but 
 a bit more complex: "[%d%a%.]+" line 76.
 
-splitt file1 column1 .. fileN columnX
+splitt file1 columnX .. fileN columnZ
 
 Written when stranded overnight at Arlanda Airport from Umeå to Oslo
 by Ole W. Saastad, 20 May 2016.
 
-Last update 1. Nov 2024.
+Last update 7. Nov 2024.
 
 ]]
 
 -- Process arguments, how many files to process.
 if #arg==0 then
-    print("usage: splitt file1 column1 .. fileN columnN")
+    print("usage: splitt file1 columnX .. fileN columnZ")
     os.exit(1)
 end
 if not (#arg%2==0) then
@@ -38,7 +38,7 @@ for j = 1, files*2, 2 do
    i = i + 1
    f[i]=io.open(arg[j],"r")   -- keep file pointers in an array.
    if f[i]==nil then      
-      print("usage: splitt file1 column1 .. fileN columnN")
+      print("usage: splitt file1 columnX .. fileN columnZ")
       print("usage: failed to open file:",arg[j])
       os.exit(1)
    end
@@ -48,7 +48,7 @@ for j = 2, files*2, 2 do
    i = i + 1
    c[i]=tonumber(arg[j])
    if not c[i] then
-     print("usage: splitt file1 column1 .. fileN columnN")
+     print("usage: splitt file1 columnX .. fileN columnZ")
      print("Expected number got :",arg[j])
      os.exit(1)
   end
